@@ -44,6 +44,8 @@ class Definition
     private array $changes = [];
     private array $bindings = [];
     private array $errors = [];
+    private string $id;
+    private TagCache $tagCache;
 
     protected array $arguments = [];
 
@@ -423,6 +425,10 @@ class Definition
     public function setTags(array $tags): static
     {
         $this->tags = $tags;
+        if (isset($this->tagCache))
+        {
+            $this->tagCache->setTags($this->id, $tags);
+        }
 
         return $this;
     }
@@ -451,6 +457,10 @@ class Definition
     public function addTag(string $name, array $attributes = []): static
     {
         $this->tags[$name][] = $attributes;
+        if (isset($this->tagCache))
+        {
+            $this->tagCache->addTag($this->id, $name, $attributes);
+        }
 
         return $this;
     }
@@ -485,6 +495,10 @@ class Definition
     public function clearTag(string $name): static
     {
         unset($this->tags[$name]);
+        if (isset($this->tagCache))
+        {
+            $this->tagCache->clearTag($this->id, $name);
+        }
 
         return $this;
     }
@@ -497,6 +511,10 @@ class Definition
     public function clearTags(): static
     {
         $this->tags = [];
+        if (isset($this->tagCache))
+        {
+            $this->tagCache->clearTags($this->id);
+        }
 
         return $this;
     }
@@ -820,4 +838,12 @@ class Definition
     {
         return (bool) $this->errors;
     }
+
+    public function setupTagCache($id, TagCache $tagCache): static
+    {
+        $this->id = $id;
+        $this->tagCache = $tagCache->setTags($this->id, $this->getTags());
+        return $this;
+    }
+
 }

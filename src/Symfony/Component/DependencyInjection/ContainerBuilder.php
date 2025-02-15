@@ -92,6 +92,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     private bool $trackResources;
     private InstantiatorInterface $proxyInstantiator;
     private ExpressionLanguage $expressionLanguage;
+    private TagCache $tagCache;
 
     /**
      * @var ExpressionFunctionProviderInterface[]
@@ -160,6 +161,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     public function __construct(?ParameterBagInterface $parameterBag = null)
     {
         parent::__construct($parameterBag);
+        $this->tagCache = new TagCache();
 
         $this->trackResources = interface_exists(ResourceInterface::class);
         $this->setDefinition('service_container', (new Definition(ContainerInterface::class))->setSynthetic(true)->setPublic(true));
@@ -546,6 +548,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             if ('.' !== ($id[0] ?? '-')) {
                 $this->removedIds[$id] = true;
             }
+            $this->tagCache->clearTags($id);
         }
     }
 
@@ -1020,7 +1023,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         unset($this->aliasDefinitions[$id], $this->removedIds[$id]);
 
-        return $this->definitions[$id] = $definition;
+        return $this->definitions[$id] = $definition->setupTagCache($id, $this->tagCache);
     }
 
     /**
@@ -1337,11 +1340,15 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      */
     public function findTaggedServiceIds(string $name, bool $throwOnAbstract = false): array
     {
+        if (!$throwOnAbstract)
+        {
+            return $this->tagCache->findTaggedServiceIds($name);
+        }
         $this->usedTags[] = $name;
         $tags = [];
         foreach ($this->getDefinitions() as $id => $definition) {
             if ($definition->hasTag($name) && !$definition->hasTag('container.excluded')) {
-                if ($throwOnAbstract && $definition->isAbstract()) {
+                if ($definition->isAbstract()) {
                     throw new InvalidArgumentException(\sprintf('The service "%s" tagged "%s" must not be abstract.', $id, $name));
                 }
                 $tags[$id] = $definition->getTag($name);
