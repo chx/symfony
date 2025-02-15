@@ -20,9 +20,14 @@ class TagCache
     public function setTags(string $id, array $tags): static
     {
         $this->clearTags($id);
-        foreach ($tags as $name => $attributes) {
-            $this->addTag($id, $name, $attributes);
+        foreach ($tags as $key => $value) {
+            if (is_array($value)) {
+                $this->addTag($id, $key, $value);
+            } else {
+                $this->addTag($id, $value);
+            }
         }
+
         return $this;
     }
 
@@ -40,8 +45,7 @@ class TagCache
 
     public function clearTags(string $id): void
     {
-        foreach ($this->names[$id] ?? [] as $name)
-        {
+        foreach ($this->names[$id] ?? [] as $name) {
             unset($this->tags[$name][$id]);
         }
         unset($this->names[$id]);
