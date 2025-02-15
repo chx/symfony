@@ -425,8 +425,7 @@ class Definition
     public function setTags(array $tags): static
     {
         $this->tags = $tags;
-        if (isset($this->tagCache))
-        {
+        if (isset($this->tagCache)) {
             $this->tagCache->setTags($this->id, $tags);
         }
 
@@ -457,8 +456,7 @@ class Definition
     public function addTag(string $name, array $attributes = []): static
     {
         $this->tags[$name][] = $attributes;
-        if (isset($this->tagCache))
-        {
+        if (isset($this->tagCache)) {
             $this->tagCache->addTag($this->id, $name, $attributes);
         }
 
@@ -495,8 +493,7 @@ class Definition
     public function clearTag(string $name): static
     {
         unset($this->tags[$name]);
-        if (isset($this->tagCache))
-        {
+        if (isset($this->tagCache)) {
             $this->tagCache->clearTag($this->id, $name);
         }
 
@@ -511,8 +508,7 @@ class Definition
     public function clearTags(): static
     {
         $this->tags = [];
-        if (isset($this->tagCache))
-        {
+        if (isset($this->tagCache)) {
             $this->tagCache->clearTags($this->id);
         }
 

@@ -3,7 +3,7 @@
 /*
  * This file is part of the Symfony package.
  *
- * (c) Karoly Negyesi <karoly@negyesi.net>
+ * (c) Fabien Potencier <fabien@symfony.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -21,7 +21,7 @@ class TagCache
     {
         $this->clearTags($id);
         foreach ($tags as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $this->addTag($id, $key, $value);
             } else {
                 $this->addTag($id, $value);
@@ -55,5 +55,4 @@ class TagCache
     {
         return $this->tags[$name] ?? [];
     }
-
 }

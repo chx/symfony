@@ -1340,8 +1340,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      */
     public function findTaggedServiceIds(string $name, bool $throwOnAbstract = false): array
     {
-        if (!$throwOnAbstract)
-        {
+        if (!$throwOnAbstract) {
             return $this->tagCache->findTaggedServiceIds($name);
         }
         $this->usedTags[] = $name;
